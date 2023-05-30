@@ -1,10 +1,7 @@
 use super::EtcdKeyValue;
-use crate::protos::rpc::{
-    RangeRequest, RangeRequest_SortOrder, RangeRequest_SortTarget, RangeResponse,
-};
+use crate::proto::etcdserverpb::{RangeRequest, RangeResponse};
 use crate::ResponseHeader;
 use clippy_utilities::Cast;
-use protobuf::RepeatedField;
 
 /// Request for fetching a single key-value pair.
 #[derive(Debug, Clone)]
@@ -26,8 +23,8 @@ impl EtcdGetRequest {
             range_end: vec![],
             limit: 0,
             revision: 0,
-            sort_order: RangeRequest_SortOrder::NONE,
-            sort_target: RangeRequest_SortTarget::KEY,
+            sort_order: 0,
+            sort_target: 0,
             serializable: false,
             keys_only: false,
             count_only: false,
@@ -52,7 +49,7 @@ impl EtcdGetRequest {
     /// Gets the `key_range` from the `RangeRequest`.
     #[inline]
     pub fn get_key(&self) -> &[u8] {
-        self.proto.get_key()
+        self.proto.key.as_slice()
     }
 }
 
@@ -88,9 +85,7 @@ impl EtcdGetResponse {
     /// Takes the key-value pairs out of response, leaving an empty vector in its place.
     #[inline]
     pub fn take_kvs(&mut self) -> Vec<EtcdKeyValue> {
-        let kvs = std::mem::replace(&mut self.proto.kvs, RepeatedField::from_vec(vec![]));
-
-        kvs.into_iter().map(From::from).collect()
+        self.proto.kvs.clone().into_iter().map(From::from).collect()
     }
 
     /// Returns `true` if there are more keys to return in the requested range, and `false` otherwise.

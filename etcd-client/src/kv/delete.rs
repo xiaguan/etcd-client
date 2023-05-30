@@ -1,8 +1,7 @@
 use super::{EtcdKeyValue, KeyRange};
-use crate::protos::rpc::{DeleteRangeRequest, DeleteRangeResponse};
+use crate::proto::etcdserverpb::{DeleteRangeRequest, DeleteRangeResponse};
 use crate::ResponseHeader;
 use clippy_utilities::Cast;
-use protobuf::RepeatedField;
 
 /// Request for deleting key-value pairs.
 #[derive(Debug, Clone)]
@@ -36,7 +35,7 @@ impl EtcdDeleteRequest {
     /// Get key of request
     #[inline]
     pub fn get_key(&self) -> &[u8] {
-        self.proto.get_key()
+        self.proto.key.as_slice()
     }
 
     /// Wether request previous kv or not
@@ -76,9 +75,12 @@ impl EtcdDeleteResponse {
     /// Takes the previous key-value pairs out of response, leaving an empty vector in its place.
     #[inline]
     pub fn take_prev_kvs(&mut self) -> Vec<EtcdKeyValue> {
-        let kvs = std::mem::replace(&mut self.proto.prev_kvs, RepeatedField::from_vec(vec![]));
-
-        kvs.into_iter().map(From::from).collect()
+        self.proto
+            .prev_kvs
+            .clone()
+            .into_iter()
+            .map(From::from)
+            .collect()
     }
 
     /// Returns `true` if the previous key-value pairs is not empty, and `false` otherwise.
@@ -101,7 +103,7 @@ impl EtcdDeleteResponse {
     /// Get revision of response
     #[inline]
     pub fn get_revision(&self) -> i64 {
-        self.proto.get_header().revision
+        self.proto.header.unwrap().revision
     }
 }
 

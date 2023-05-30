@@ -1,4 +1,4 @@
-use crate::protos::rpc::{PutRequest, PutResponse};
+use crate::proto::etcdserverpb::{PutRequest, PutResponse};
 use crate::EtcdKeyValue;
 use crate::ResponseHeader;
 use clippy_utilities::Cast;
@@ -58,13 +58,13 @@ impl EtcdPutRequest {
     /// Gets the key from `PutRequest`.
     #[inline]
     pub fn get_key(&self) -> &[u8] {
-        self.proto.get_key()
+        self.proto.key.as_slice()
     }
 
     /// Gets the value from `PutRequest`.
     #[inline]
     pub fn get_value(&self) -> Vec<u8> {
-        self.proto.get_value().to_vec()
+        self.proto.value
     }
 }
 
@@ -98,7 +98,7 @@ impl EtcdPutResponse {
     /// Gets the revision of the key-value store when generating the response.
     #[inline]
     pub fn get_revision(&self) -> i64 {
-        self.proto.get_header().revision
+        self.proto.header.unwrap().revision
     }
 }
 
