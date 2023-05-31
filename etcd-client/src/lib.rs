@@ -122,7 +122,7 @@ mod lease;
 /// Lock mod for lock operations.
 mod lock;
 /// Etcd client request and response protos
-mod protos;
+mod proto;
 /// Etcd API response header
 mod response_header;
 /// Watch mod for watch operations.

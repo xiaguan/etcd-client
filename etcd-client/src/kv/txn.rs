@@ -2,13 +2,9 @@ use super::{
     EtcdDeleteRequest, EtcdDeleteResponse, EtcdPutRequest, EtcdPutResponse, EtcdRangeRequest,
     EtcdRangeResponse, KeyRange,
 };
-use crate::protos::rpc::{
-    Compare, Compare_CompareResult, Compare_CompareTarget, Compare_oneof_target_union, RequestOp,
-    ResponseOp, ResponseOp_oneof_response, TxnRequest, TxnResponse,
-};
+use crate::proto::etcdserverpb::{Compare, RequestOp, ResponseOp, TxnRequest, TxnResponse};
 use crate::ResponseHeader;
 use clippy_utilities::Cast;
-use protobuf::RepeatedField;
 
 /// Request for performing transaction operations.
 #[derive(Debug, Clone)]
